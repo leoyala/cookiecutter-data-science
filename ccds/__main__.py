@@ -29,7 +29,7 @@ def default_ccds_main(f):
 
     def _main(*args, **kwargs):
         f.params[1].default = (
-            "https://github.com/drivendataorg/cookiecutter-data-science"
+            "https://github.com/leoyala/cookiecutter-data-science"
         )
         return f(*args, **kwargs)
 

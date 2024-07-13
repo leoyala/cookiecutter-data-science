@@ -1,0 +1,91 @@
+image: nvidia/cuda:12.5.1-base-ubuntu22.04
+
+before_script:
+  - DEBIAN_FRONTEND=noninteractive
+  - TZ=Europe/Berlin
+  - apt update && apt install -y tzdata
+  - apt update && apt install -y build-essential curl wget git rsync vim libgl1-mesa-glx libglib2.0-0 ffmpeg libsm6 libxext6
+  - export PATH="/opt/conda/bin:${PATH}"
+  - curl https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -O && bash Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -b -p "/opt/conda"  && rm -f Miniconda3-py310_23.5.2-0-Linux-x86_64.sh && conda config --add channels conda-forge
+  - python --version  # For debugging
+  - {% if "requirements.txt" == cookiecutter.dependency_file -%}
+	  $(PYTHON_INTERPRETER) -m pip install -U pip
+	  $(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+	  {% elif "environment.yml" == cookiecutter.dependency_file -%}
+	  conda env update --name $(PROJECT_NAME) --file environment.yml --prune
+	  {% elif "Pipfile" == cookiecutter.dependency_file -%}
+	  pipenv install
+	  {% endif %}
+  - pip install --no-dependencies .
+  - pip list > pip_list.txt
+# List of stages for order of execution
+stages:
+  - code_style
+  - test
+  - pages
+  - secret_detection
+  - semgrep-sast
+
+test:
+  stage: test
+  script:
+    - pytest --cov=susi --color=yes --cov-report term --cov-report xml:coverage.xml --code-highlight=yes --ignore=incubator --junitxml=report.xml
+  coverage: '/TOTAL.*\s+(\d+%)$/'
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - pip_list.txt
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" || $CI_PIPELINE_SOURCE == "merge_request_event"
+
+code_style:
+  stage: code_style
+  script:
+    # avoid exiting on error
+    - set +e
+    - make check-codestyle
+  artifacts:
+    paths:
+      - pip_list.txt
+  # re-enable default behaviour
+  after_script:
+    - set -e
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" || $CI_PIPELINE_SOURCE == "merge_request_event"
+
+pages:
+  stage: pages
+  script:
+    - apt install -y pandoc
+    - pip install -U sphinx furo nbsphinx sphinx-gallery==0.10 ipykernel numpydoc blosc2 kaleido
+    - python -m ipykernel install --user --name python3 --display-name "python3"
+    - cd doc
+    - make html SPHINXOPTS="-j4"
+    - mv build/html/ ../public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+sast:
+  stage: test
+secret_detection:
+  variables:
+    SECRET_DETECTION_HISTORIC_SCAN: "false" # pragma: allowlist secret
+  before_script:
+    - echo "Skipping default before_script"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" || $CI_PIPELINE_SOURCE == "merge_request_event"
+semgrep-sast:
+  before_script:
+    - echo "Skipping default before_script"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" || $CI_PIPELINE_SOURCE == "merge_request_event"
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml

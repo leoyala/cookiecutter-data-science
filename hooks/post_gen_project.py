@@ -63,6 +63,12 @@ write_custom_config("{{ cookiecutter.custom_config }}")
 # Remove LICENSE if "No license file"
 if "{{ cookiecutter.open_source_license }}" == "No license file":
     Path("LICENSE").unlink()
+    
+if "{{ cookiecutter.include_pre-commit_hooks }}" == "No":
+    Path(".pre-commit-config.yaml").unlink()
+    
+if "{{ cookiecutter.version_control }}" == "none":
+    Path(".gitlab-ci.yaml").unlink()
 
 # Make single quotes prettier
 # Jinja tojson escapes single-quotes with \u0027 since it's meant for HTML/JS

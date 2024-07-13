@@ -5,6 +5,8 @@
     "author_name": "Your name (or your organization/company/team)",
     "description": "A short description of the project.",
     "python_version_number": "3.10",
+    "version_control": ["GitLab", "none"],
+    "include_pre-commit_hooks": ["Yes", "No"],
     "dataset_storage": [
         {"none": "none"},
         {"azure": {"container": "container-name"}},

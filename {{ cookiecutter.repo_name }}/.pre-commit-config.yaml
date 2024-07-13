@@ -1,0 +1,41 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0 
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-added-large-files
+      - id: check-merge-conflict
+  - repo: https://github.com/asottile/pyupgrade  # code style upgrades
+    rev: v3.16.0
+    hooks:
+      - id: pyupgrade
+        args: [--py38-plus]
+  - repo: https://github.com/pycqa/isort  # sort imports
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (python)
+        args: ["--settings-path", "pyproject.toml"]
+  - repo: https://github.com/psf/black  # code formatting
+    rev: 24.4.2
+    hooks:
+      - id: black
+        args: ["--config", "pyproject.toml"]
+  - repo: https://github.com/PyCQA/docformatter  # docstring formatter
+    rev: v1.7.5
+    hooks:
+      - id: docformatter
+        args: [ "--in-place", "--black", "--style=sphinx" ]
+  - repo: https://github.com/PyCQA/flake8  # code style
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        args: ["--ignore", "E203,E501,W503", "--max-line-length", "88"]
+  - repo: https://github.com/pre-commit/mirrors-mypy  # static typing
+    rev: v1.10.1
+    hooks:
+      - id: mypy
