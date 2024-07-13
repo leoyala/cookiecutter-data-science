@@ -29,14 +29,27 @@ requirements:
 .PHONY: clean
 clean:
 	find . -type f -name "*.py[co]" -delete
+	find . -type f -name "*.mypy_cache" -delete
+	find . -type f -name "*.pytest_cache" -delete
 	find . -type d -name "__pycache__" -delete
+	find . -type d -name ".DS_Store" -delete
 
 ## Lint using flake8 and black (use `make format` to do formatting)
 .PHONY: lint
 lint:
-	flake8 {{ cookiecutter.module_name }}
+	flake8 --ignore E731,E266,E501,C901,W503 --max-line-length 99 --exclude .git,notebooks,references,models,data {{ cookiecutter.module_name }}
 	isort --check --diff --profile black {{ cookiecutter.module_name }}
 	black --check --config pyproject.toml {{ cookiecutter.module_name }}
+
+## static type check
+.PHONY: mypy
+mypy:
+	mypy --config-file pyproject.toml -p {{ cookiecutter.module_name }}
+
+## check project safety
+.PHONY: check-safety
+check-safety:
+	bandit -ll --recursive {{ cookiecutter.module_name }}
 
 ## Format source code with black
 .PHONY: format

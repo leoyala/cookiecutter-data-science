@@ -9,8 +9,7 @@ before_script:
   - curl https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -O && bash Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -b -p "/opt/conda"  && rm -f Miniconda3-py310_23.5.2-0-Linux-x86_64.sh && conda config --add channels conda-forge
   - python --version  # For debugging
   - {% if "requirements.txt" == cookiecutter.dependency_file -%}
-	  $(PYTHON_INTERPRETER) -m pip install -U pip
-	  $(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+	  python -m pip install -U pip && python -m pip install -r requirements.txt
 	  {% elif "environment.yml" == cookiecutter.dependency_file -%}
 	  conda env update --name $(PROJECT_NAME) --file environment.yml --prune
 	  {% elif "Pipfile" == cookiecutter.dependency_file -%}
@@ -29,7 +28,7 @@ stages:
 test:
   stage: test
   script:
-    - pytest --cov=susi --color=yes --cov-report term --cov-report xml:coverage.xml --code-highlight=yes --ignore=incubator --junitxml=report.xml
+    - make test
   coverage: '/TOTAL.*\s+(\d+%)$/'
   artifacts:
     when: always

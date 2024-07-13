@@ -67,8 +67,10 @@ if "{{ cookiecutter.open_source_license }}" == "No license file":
 if "{{ cookiecutter.include_precommit_hooks }}" == "No":
     Path(".pre-commit-config.yaml").unlink()
     
-if "{{ cookiecutter.version_control }}" == "none":
+if "{{ cookiecutter.version_control }}" == "none" or "{{ cookiecutter.version_control }}" == "GitHub":
     Path(".gitlab-ci.yaml").unlink()
+if "{{ cookiecutter.version_control }}" == "none" or "{{ cookiecutter.version_control }}" == "GitLab":
+    shutil.rmtree(".github")
 
 # Make single quotes prettier
 # Jinja tojson escapes single-quotes with \u0027 since it's meant for HTML/JS

@@ -4,6 +4,8 @@ packages = [
     "isort",
     "pip",
     "python-dotenv",
+    "mypy",
+    "bandit"
 ]
 
 basic = [

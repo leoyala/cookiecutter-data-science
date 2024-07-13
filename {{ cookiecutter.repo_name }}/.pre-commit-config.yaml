@@ -14,17 +14,23 @@ repos:
     hooks:
       - id: pyupgrade
         args: [--py38-plus]
+
+  - repo: https://github.com/PyCQA/bandit  # security
+    rev: 1.7.9
+    hooks:
+      - id: bandit
+        args: ["-ll", "--recursive", "{{ cookiecutter.module_name }}"]
   - repo: https://github.com/pycqa/isort  # sort imports
     rev: 5.13.2
     hooks:
       - id: isort
         name: isort (python)
-        args: ["--settings-path", "pyproject.toml"]
+        args: ["--settings-path", "pyproject.toml", "{{ cookiecutter.module_name }}"]
   - repo: https://github.com/psf/black  # code formatting
     rev: 24.4.2
     hooks:
       - id: black
-        args: ["--config", "pyproject.toml"]
+        args: ["--config", "pyproject.toml", "{{ cookiecutter.module_name }}"]
   - repo: https://github.com/PyCQA/docformatter  # docstring formatter
     rev: v1.7.5
     hooks:
@@ -34,8 +40,9 @@ repos:
     rev: 6.1.0
     hooks:
       - id: flake8
-        args: ["--ignore", "E203,E501,W503", "--max-line-length", "88"]
+        args: ["--ignore", "E731,E266,E501,C901,W503", "--max-line-length", "99", "--exclude", ".git,notebooks,references,models,data", "{{ cookiecutter.module_name }}"]
   - repo: https://github.com/pre-commit/mirrors-mypy  # static typing
     rev: v1.10.1
     hooks:
       - id: mypy
+        args: ["--config-file", "pyproject.toml", "-p", "{{ cookiecutter.module_name }}"]
