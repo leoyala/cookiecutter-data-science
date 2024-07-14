@@ -40,9 +40,13 @@ repos:
     rev: 6.1.0
     hooks:
       - id: flake8
-        args: ["--ignore", "E731,E266,E501,C901,W503", "--max-line-length", "99", "--exclude", ".git,notebooks,references,models,data", "{{ cookiecutter.module_name }}"]
+        args: ["--ignore", "E731,E266,E501,C901,W503", "--max-line-length", "120", "--exclude", ".git,notebooks,references,models,data", "{{ cookiecutter.module_name }}"]
   - repo: https://github.com/pre-commit/mirrors-mypy  # static typing
     rev: v1.10.1
     hooks:
       - id: mypy
         args: ["--config-file", "pyproject.toml", "-p", "{{ cookiecutter.module_name }}"]
+  - repo: https://github.com/Yelp/detect-secrets  # prevents secrets from entering codebase
+    rev: v1.5.0
+    hooks:
+    -   id: detect-secrets

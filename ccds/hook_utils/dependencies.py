@@ -1,11 +1,10 @@
+import toml
+
+
 packages = [
-    "black",
-    "flake8",
-    "isort",
     "pip",
     "python-dotenv",
-    "mypy",
-    "bandit"
+
 ]
 
 basic = [
@@ -18,11 +17,31 @@ basic = [
     "scikit-learn",
 ]
 
+dev = [
+    "mypy==1.10.1",
+    "bandit==1.7.9",
+    "black==24.4.2",
+    "flake8==7.1.0",
+    "isort[colors]==5.13.2",
+    "pytest",
+    "pytest-cov",
+    "pre-commit",
+]
+
 scaffold = [
     "typer",
     "loguru",
     "tqdm",
 ]
+
+
+def write_dependencies_to_pyproject(packages, dev):
+    with open("pyproject.toml", "r") as f:
+        pyproject_data = toml.load(f)
+    pyproject_data["project"]["dependencies"].extend(packages)
+    pyproject_data["project"]["optional-dependencies"]["dev"].extend(dev)
+    with open("pyproject.toml", "w") as f:
+        toml.dump(pyproject_data, f)
 
 
 def write_dependencies(

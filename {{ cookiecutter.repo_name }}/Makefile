@@ -37,7 +37,7 @@ clean:
 ## Lint using flake8 and black (use `make format` to do formatting)
 .PHONY: lint
 lint:
-	flake8 --ignore E731,E266,E501,C901,W503 --max-line-length 99 --exclude .git,notebooks,references,models,data {{ cookiecutter.module_name }}
+	flake8 --ignore E731,E266,E501,C901,W503 --max-line-length 120 --exclude .git,notebooks,references,models,data {{ cookiecutter.module_name }}
 	isort --check --diff --profile black {{ cookiecutter.module_name }}
 	black --check --config pyproject.toml {{ cookiecutter.module_name }}
 

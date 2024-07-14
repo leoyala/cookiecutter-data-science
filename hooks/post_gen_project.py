@@ -5,7 +5,7 @@ from pathlib import Path
 # https://github.com/cookiecutter/cookiecutter/issues/824
 #   our workaround is to include these utility functions in the CCDS package
 from ccds.hook_utils.custom_config import write_custom_config
-from ccds.hook_utils.dependencies import basic, packages, scaffold, write_dependencies
+from ccds.hook_utils.dependencies import basic, dev, packages, scaffold, write_dependencies, write_dependencies_to_pyproject
 
 #
 #  TEMPLATIZED VARIABLES FILLED IN BY COOKIECUTTER
@@ -57,6 +57,8 @@ write_dependencies(
     module_name="{{ cookiecutter.module_name }}",
     python_version="{{ cookiecutter.python_version_number }}",
 )
+
+write_dependencies_to_pyproject(packages_to_install, dev=dev)
 
 write_custom_config("{{ cookiecutter.custom_config }}")
 
