@@ -51,7 +51,7 @@ for docs_template in docs_path.iterdir():
 #
 write_dependencies(
     "{{ cookiecutter.dependency_file }}",
-    packages_to_install,
+    packages_to_install + dev,
     pip_only_packages,
     repo_name="{{ cookiecutter.repo_name }}",
     module_name="{{ cookiecutter.module_name }}",
